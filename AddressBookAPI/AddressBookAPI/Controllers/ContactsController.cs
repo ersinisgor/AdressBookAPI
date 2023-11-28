@@ -17,36 +17,66 @@ namespace AddressBookAPI.Controllers
 		};
 
 
-		// GET: api/<ContactsController>
 		[HttpGet]
-		public IEnumerable<string> AllContacts()
+		public IActionResult AllContacts()
 		{
-			return new string[] { "value1", "value2" };
+			return Ok(contacts);
 		}
 
-		// GET api/<ContactsController>/5
 		[HttpGet("{id}")]
-		public string ContactById(int id)
+		public IActionResult ContactById(int id)
 		{
-			return "value";
+			var contact = contacts.FirstOrDefault(x => x.Id == id);
+			if (contact == null)
+			{
+				return BadRequest("Can not find this contact");
+			}
+			return Ok(contact);
 		}
 
-		// POST api/<ContactsController>
 		[HttpPost]
-		public void CreateContact([FromBody] string value)
+		public IActionResult CreateContact([FromBody] Contact newContact)
 		{
+			var contact = new Contact();
+			contact.Id = newContact.Id;
+			contact.FirstName = newContact.FirstName;
+			contact.LastName = newContact.LastName;
+			contact.PhoneNumber = newContact.PhoneNumber;
+			contact.Address = newContact.Address;
+			contacts.Add(contact);
+
+			return Ok(contact);
 		}
 
-		// PUT api/<ContactsController>/5
-		[HttpPut("{id}")]
-		public void UpdateContact(int id, [FromBody] string value)
+		[HttpPut]
+		public IActionResult UpdateContact([FromBody] Contact updateContact)
 		{
+			var contact = contacts.FirstOrDefault(x => x.Id == updateContact.Id);
+			if (contact == null)
+			{
+				return BadRequest("Can not find this contact to update");
+			}
+
+			contact.FirstName = updateContact.FirstName;
+			contact.LastName = updateContact.LastName;
+			contact.PhoneNumber = updateContact.PhoneNumber;
+			contact.Address = updateContact.Address;
+
+			return Ok(contact);
+
 		}
 
-		// DELETE api/<ContactsController>/5
 		[HttpDelete("{id}")]
-		public void DeleteContact(int id)
+		public IActionResult DeleteContact(int id)
 		{
+			var contact = contacts.FirstOrDefault(x => x.Id == id);
+			if (contact == null)
+			{
+				return BadRequest("Can not find this contact to delete");
+			}
+
+			contacts.Remove(contact);
+			return Ok("The contact has been deleted");
 		}
 	}
 }
